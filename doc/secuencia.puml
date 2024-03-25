@@ -1,0 +1,30 @@
+@startuml PowerAPP sequence
+
+actor User
+participant Booking
+participant GymClass
+participant Instructor
+
+User -> Booking: createBooking(gymClassId)
+activate Booking
+
+Booking -> GymClass: findGymClassById(gymClassId)
+activate GymClass
+
+GymClass --> Booking: return gymClass
+deactivate GymClass
+
+Booking -> Instructor: getInstructor(gymClass)
+activate Instructor
+
+Instructor --> Booking: return instructor
+deactivate Instructor
+
+Booking --> User: return bookingConfirmation
+deactivate Booking
+
+' Primero, el User envía una solicitud para crear una Booking con un gymClassId específico. 
+' Luego, Booking busca la GymClass correspondiente y obtiene el Instructor para esa clase. 
+' Finalmente, Booking devuelve una confirmación de reserva al User.
+
+@enduml
