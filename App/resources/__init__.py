@@ -1,0 +1,1 @@
+from app.resources.gym_class_resource import GymClassResource

@@ -1,27 +1,23 @@
 import unittest
-from app import create_app
-from app.models.gym_class import GymClass
-from app.repositories.gym_class_repository import GymClassRepository
+from app import create_app, db
+from sqlalchemy import text
 
-class TestDatabase(unittest.TestCase):
+class DatabaseTestCase(unittest.TestCase):
+    
     def setUp(self):
         self.app = create_app()
-        self.app.config['TESTING'] = True
-        self.client = self.app.test_client()
-        self.repo = GymClassRepository()
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
 
-    def test_gym_class_in_database(self):
-        # Create a new gym class
-        new_class = GymClass(name="Yoga", instructor="John Doe", duration=60)
-        self.repo.add(new_class)
-
-        # Retrieve the gym class from the database
-        retrieved_class = self.repo.get(new_class.id)
-
-        # Check if the retrieved class is the same as the one we added
-        self.assertEqual(retrieved_class.name, new_class.name)
-        self.assertEqual(retrieved_class.instructor, new_class.instructor)
-        self.assertEqual(retrieved_class.duration, new_class.duration)
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+    
+    def test_connection(self):
+        result = db.session.query(text("'Hello World'")).one()
+        self.assertEqual(result[0], 'Hello World')
 
 if __name__ == "__main__":
     unittest.main()

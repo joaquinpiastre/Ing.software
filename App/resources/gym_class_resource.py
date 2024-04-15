@@ -1,8 +1,7 @@
 from flask import jsonify, Blueprint, request
 from app.services.gym_class_service import GymClassService
-from app.mapping.response_schema import ResponseSchema
 from app.mapping.gym_class_schema import GymClassSchema
-from app.models.response_message import ResponseBuilder
+
 
 gym_class = Blueprint('gym_class', __name__)
 gym_class_schema = GymClassSchema()
@@ -14,16 +13,6 @@ def get_classes():
     class_data = gym_class_schema.load(request.json)
     classes = service.find_all(class_data)
     return jsonify({"Classes": classes}), 200
-
-#find by id
-@gym_class.route('/find_class/<int:id>', methods=['GET'])
-def get_class(id):
-    service = GymClassService()
-    response_builder = ResponseBuilder()
-    response_builder.add_message("Clase encontrada")\
-        .add_status_code(200)\
-        .add_data(GymClassSchema().dump(service.find(id)))
-    return ResponseSchema().dump(response_builder.build()), 200
 
 #create
 @gym_class.route('/add_class', methods=['POST'])

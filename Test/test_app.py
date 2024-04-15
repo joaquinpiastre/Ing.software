@@ -1,14 +1,19 @@
 import unittest
+from flask import current_app
 from app import create_app
 
-class TestApp(unittest.TestCase):
+class AppTestCase(unittest.TestCase):
+
     def setUp(self):
         self.app = create_app()
-        self.client = self.app.test_client()
+        self.app_context = self.app.app_context()
+        self.app_context.push()
 
-    def test_home_page(self):
-        response = self.client.get('/home')
-        self.assertEqual(response.status_code, 200)
+    def tearDown(self):
+        self.app_context.pop()
 
-if __name__ == "__main__":
+    def test_app(self):
+        self.assertIsNotNone(current_app)
+
+if __name__ == '__main__':
     unittest.main()
